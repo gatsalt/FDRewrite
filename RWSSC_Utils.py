@@ -61,7 +61,7 @@ class sscUtils:
         _issueCounts['count'] = _issueCounts['critical'] + _issueCounts['high'] + _issueCounts['medium'] + _issueCounts['low']
         _summaryHidden = self.getProjectVersionSummaryCounts(id)
 
-        _issueCounts['hiddenCount'] = _summaryHidden['data'][0]['hiddenCount']
+        #_issueCounts['hiddenCount'] = _summaryHidden['data'][0]['hiddenCount']
         _issueCounts['suppressedCount'] = _summaryHidden['data'][0]['suppressedCount']
         _issueCounts['removedCount'] = _summaryHidden['data'][0]['removedCount']
 
@@ -184,7 +184,7 @@ class sscUtils:
 
         _issues = {'data': [], 'count': 0}
         
-        _url = 'https://fortify.1dc.com/ssc/api/v1/projectVersions/{}/issues?start=0&limit=500&showhidden=true&showremoved=true&showsuppressed=true&showshortfilenames=true'.format(id)
+        _url = 'https://fortify.1dc.com/ssc/api/v1/projectVersions/{}/issues?start=0&limit=500&showhidden=false&showremoved=true&showsuppressed=true&showshortfilenames=true'.format(id)
 
         _moreRecords = True
 
@@ -195,6 +195,7 @@ class sscUtils:
             response = requests.get(_url, auth=HTTPBasicAuth(self.sscUser, self.sscPassword), headers=self.headers)
             issues = json.loads(response.text)
 
+            
             if _issues['count'] == 0:
                 _issues['count'] = issues['count']
                 logging.info('Downloading for {} issues'.format(_issues['count']))
@@ -206,7 +207,7 @@ class sscUtils:
 
                 #logging.info(issue)
 
-                if (issue['hidden'] == False and issue['suppressed'] == False and issue['removed'] == True):
+                '''if (issue['hidden'] == False and issue['suppressed'] == False and issue['removed'] == True):
                     holdproj = issue['projectVersionId']
                     holdissue = issue['id']
 
@@ -227,7 +228,7 @@ class sscUtils:
 
                     issue['removedDate'] = holdnewdate
 
-                    #logging.info(issue)
+                    #logging.info(issue)'''
 
                 es.postSSCProjIssues(json.dumps(issue))
                 #_issues['data'].append(issue)

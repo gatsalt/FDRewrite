@@ -64,7 +64,7 @@ for projectVersion in projectVersions['data']:
             holdhigh = issues_count['high']
             holdmedium = issues_count['medium']
             holdlow = issues_count['low']
-            holdhidden = issues_count['hiddenCount']
+            #holdhidden = issues_count['hiddenCount']
             holdsuppressed = issues_count['suppressedCount']
             holdremoved = issues_count['removedCount']
 
@@ -76,12 +76,15 @@ for projectVersion in projectVersions['data']:
                 comparehigh = foundprojcounts['hits']['hits'][0]['_source']['high']
                 comparemedium = foundprojcounts['hits']['hits'][0]['_source']['medium']
                 comparelow = foundprojcounts['hits']['hits'][0]['_source']['low']
-                comparehidden = foundprojcounts['hits']['hits'][0]['_source']['hiddenCount']
+                #comparehidden = foundprojcounts['hits']['hits'][0]['_source']['hiddenCount']
                 comparesuppressed = foundprojcounts['hits']['hits'][0]['_source']['suppressedCount']
                 compareremoved = foundprojcounts['hits']['hits'][0]['_source']['removedCount']
 
+                '''if ((holdcritical == comparecritical) and (holdhigh == comparehigh) and (holdmedium == comparemedium) and (holdlow == comparelow)
+                     and (holdhidden == comparehidden) and (holdsuppressed == comparesuppressed) and (holdremoved == compareremoved)):'''
+
                 if ((holdcritical == comparecritical) and (holdhigh == comparehigh) and (holdmedium == comparemedium) and (holdlow == comparelow)
-                     and (holdhidden == comparehidden) and (holdsuppressed == comparesuppressed) and (holdremoved == compareremoved)):
+                     and (holdsuppressed == comparesuppressed) and (holdremoved == compareremoved)):
 
                     #logging.info(projid)
                     logging.info ('found project & counts and they all match')
@@ -108,6 +111,11 @@ for projectVersion in projectVersions['data']:
     logging.info(needReset)
 
     if needReset == True:
+
+        '''
+        clear out  elastic tables to reset to current state for the release (projectVersionId)
+        '''
+
         delproject = es.deleteSSCProjectsbyProjectId(projid)
         logging.info(delproject)
         delprojectc = es.deleteSSCProjectCountsbyProjectId(projid)

@@ -297,7 +297,7 @@ class elasticUtil:
 
         response = requests.post(url, data=json.dumps(_summary), headers=_Headers)
 
-        logging.info(response.text)
+        #logging.info(response.text)
 
     def mapFODScanSummary(self):
 
@@ -417,7 +417,7 @@ class elasticUtil:
         url = '{}/fodscansummary/fodscansummary/'.format(self._elasticUrl)
         response = requests.post(url, data=json.dumps(_summary), headers=_Headers)
 
-        logging.info(response.text)
+        #logging.info(response.text)
 
 
     def mapFODRelIssues(self):
@@ -1154,6 +1154,40 @@ class elasticUtil:
 
         return  json.loads(response.text)    
 
+
+    def searchSSCProjectIssuesforRemovedBadDate(self):
+
+        trueval = False
+        iRecToReturn = 500
+
+        url = ('{}/sscprojissues/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "projectVersionId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {                        
+                                "removed": trueval
+                            }
+                       }
+                    ]
+                }
+            }
+        }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+
     def searchSSCProjectIssuesforIssueName(self, issueName):
 
         url = ('{}/sscprojissues/_search'.format(self._elasticUrl))
@@ -1476,6 +1510,7 @@ class elasticUtil:
 
         return  json.loads(response.text)
 
+    
     def deleteFODApplicationsbyApplicationId(self, applid):
 
         url = ('{}/fodapplications/fodapplications/_delete_by_query'.format(self._elasticUrl))
@@ -1492,5 +1527,141 @@ class elasticUtil:
         response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
 
        #print(response.text)
+
+        return  json.loads(response.text)
+
+    
+
+    def deleteFODReleasesbyReleaseId(self, releaseid):
+
+        url = ('{}/fodreleases/fodreleases/_delete_by_query'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "releaseId": releaseid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+       #print(response.text)
+
+        return  json.loads(response.text)
+
+    def deleteFODCountsbyReleaseId(self, releaseid):
+
+        url = ('{}/fodcounts/fodcounts/_delete_by_query'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "releaseId": releaseid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+       #print(response.text)
+
+        return  json.loads(response.text)
+
+    def deleteFODScansbyReleaseId(self, releaseid):
+
+        url = ('{}/fodscans/fodscans/_delete_by_query'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "releaseId": releaseid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+       #print(response.text)
+
+        return  json.loads(response.text)
+
+    def deleteFODScanSummarybyReleaseId(self, releaseid):
+
+        url = ('{}/fodscansummary/fodscansummary/_delete_by_query'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "releaseId": releaseid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+       #print(response.text)
+
+        return  json.loads(response.text)
+
+    def deleteFODRelIssuesbyReleaseId(self, releaseid):
+
+        url = ('{}/fodrelissues/fodrelissues/_delete_by_query'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "releaseId": releaseid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+       #print(response.text)
+
+        return  json.loads(response.text)
+
+
+    def searchFODReleasesforReleaseId(self, releaseid):
+
+        url = ('{}/fodreleases/_search'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "releaseId": releaseid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchFODCountsforReleaseId(self, releaseid):
+
+        url = ('{}/fodcounts/_search'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "releaseId": releaseid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
 
         return  json.loads(response.text)
