@@ -45,27 +45,68 @@ class sscUtils:
         response = requests.get(_url, auth=HTTPBasicAuth(self.sscUser, self.sscPassword), headers=self.headers)
         counts = json.loads(response.text)
 
-        for count in counts['data']:
-            if count['cleanName'] == "Critical":
-                _issueCounts['critical'] = count['visibleCount']
+        try:
+        
+            for count in counts['data']:
+                if count['cleanName'] == "Critical":
+                    _issueCounts['critical'] = count['visibleCount']
 
-            elif count['cleanName'] == "High":
-                _issueCounts['high'] = count['visibleCount']
-            elif count['cleanName'] == "Medium":
-                _issueCounts['medium'] = count['visibleCount']
-            elif count['cleanName'] == "Low":
-                _issueCounts['low'] = count['visibleCount']
-            else:
-                logging.info('odd: {}'.format(count['cleanName']))
+                elif count['cleanName'] == "High":
+                    _issueCounts['high'] = count['visibleCount']
+                elif count['cleanName'] == "Medium":
+                    _issueCounts['medium'] = count['visibleCount']
+                elif count['cleanName'] == "Low":
+                    _issueCounts['low'] = count['visibleCount']
+                else:
+                    logging.info('odd: {}'.format(count['cleanName']))
 
-        _issueCounts['count'] = _issueCounts['critical'] + _issueCounts['high'] + _issueCounts['medium'] + _issueCounts['low']
+            _issueCounts['count'] = _issueCounts['critical'] + _issueCounts['high'] + _issueCounts['medium'] + _issueCounts['low']    
+        
+        except KeyError:
+            _issueCounts['critical'] = 0
+            _issueCounts['high'] = 0
+            _issueCounts['medium'] = 0
+            _issueCounts['low'] = 0
+            logging.info('error getting count totals - force recalc')
+
+        
         _summaryHidden = self.getProjectVersionSummaryCounts(id)
 
-        #_issueCounts['hiddenCount'] = _summaryHidden['data'][0]['hiddenCount']
-        _issueCounts['suppressedCount'] = _summaryHidden['data'][0]['suppressedCount']
-        _issueCounts['removedCount'] = _summaryHidden['data'][0]['removedCount']
+        try:
+
+            #_issueCounts['hiddenCount'] = _summaryHidden['data'][0]['hiddenCount']
+            _issueCounts['suppressedCount'] = _summaryHidden['data'][0]['suppressedCount']
+            _issueCounts['removedCount'] = _summaryHidden['data'][0]['removedCount']
+
+        except KeyError:
+
+            _issueCounts['suppressedCount'] = 0
+            _issueCounts['removedCount'] = 0
+            logging.info('error getting count totals - force recalc')
+
 
         return _issueCounts
+
+    def getProjectVersionIssueCountsHidden(self, id):
+
+        _issueCountsHidden = {
+            'projectVersionId': id,
+            'hiddenCount': 0
+        }
+               
+        _summaryHidden = self.getProjectVersionSummaryCounts(id)
+
+        try:
+
+            _issueCountsHidden['hiddenCount'] = _summaryHidden['data'][0]['hiddenCount']
+            
+        except KeyError:
+
+            _issueCountsHidden['hiddenCount'] = 0
+            logging.info('error getting count totals - force recalc')
+
+
+        return _issueCountsHidden
 
     def getProjectVersionLOCCounts(self, id):
 
@@ -231,6 +272,55 @@ class sscUtils:
                     #logging.info(issue)'''
 
                 es.postSSCProjIssues(json.dumps(issue))
+                #_issues['data'].append(issue)
+                                   
+            try:
+                _url = issues['links']['next']['href']
+        
+            except KeyError:
+                _moreRecords = False
+                logging.info('no more records to download')
+            except:
+                _moreRecords = False
+                logging.info('something else happened trying to get next href')
+                '''print('In getProjectVersionIssues - Unexpected error:{}'.format(sys.exc_info()[0]))
+                '''
+
+        
+        return True
+
+    def getAndLoadProjectVersionIssuesHidden(self, id, elasticUrl):
+
+        es = elasticUtil(elasticUrl)
+
+        _issues = {'data': [], 'count': 0}
+        
+        _url = 'https://fortify.1dc.com/ssc/api/v1/projectVersions/{}/issues?start=0&limit=500&showhidden=true&showremoved=true&showsuppressed=true&showshortfilenames=true'.format(id)
+
+        _moreRecords = True
+
+        iCurrentRecord = 0
+
+        while _moreRecords:
+
+            response = requests.get(_url, auth=HTTPBasicAuth(self.sscUser, self.sscPassword), headers=self.headers)
+            issues = json.loads(response.text)
+
+            
+            if _issues['count'] == 0:
+                _issues['count'] = issues['count']
+                logging.info('Downloading for {} issues'.format(_issues['count']))
+            else:
+                logging.info('Downloading at {} - {} of {} total records'.format(iCurrentRecord, len(issues['data']), _issues['count']))
+
+            for issue in issues['data']:
+                iCurrentRecord = iCurrentRecord + 1
+
+                #logging.info(issue)
+
+                if (issue['hidden'] == True):
+                    
+                    es.postSSCProjIssuesHidden(json.dumps(issue))
                 #_issues['data'].append(issue)
                                    
             try:

@@ -642,6 +642,51 @@ class elasticUtil:
         return self.postsscprojcount
 
 
+    def mapSSCProjCountsHidden(self):
+
+        self.delESIndex('sscprojcountshidden')
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+        
+        _url = '{}/sscprojcountshidden'.format(self._elasticUrl)
+        _mapping = {
+            "mappings": {
+                "sscprojcountshidden": {
+                    "properties": {
+                        "projectVersionId": {"type": "integer"},
+                        "hiddenCount": {"type": "integer"}
+                    }
+                }
+            }
+        }
+        response = requests.put(_url, data=json.dumps(_mapping), headers=_Headers)
+
+        logging.info('Mapping sscprojcountshidden - {}'.format(response.text))
+
+    
+    def postSSCProjCountsHidden(self, jprojcounthidden):
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+
+        self.postsscprojcounthidden = {
+            'status': 'OK',
+            'status_code': 200,
+            'response': 'OK'
+        }
+
+        url = '{}/sscprojcountshidden/sscprojcountshidden/'.format(self._elasticUrl)
+        response = requests.post(url, data=jprojcounthidden, headers=_Headers)
+        #logging.info('posting projcounts: {} - {}'.format(jprojcount, response.text))
+
+        #print(response.text)
+
+        return self.postsscprojcounthidden
+
+
     def mapSSCProjAttributes(self):
 
         self.delESIndex('sscprojattrs')
@@ -896,6 +941,84 @@ class elasticUtil:
 
         return self.postsscissues
 
+    def mapSSCProjIssuesHidden(self):
+
+        self.delESIndex('sscprojissueshidden')
+        
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+        
+        _url = '{}/sscprojissueshidden'.format(self._elasticUrl)
+        _mapping = {
+            "mappings": {
+                "sscprojissueshidden": {
+                    "properties": {
+                        "bugURL": {"type": "text"},
+                        "hidden": {"type": "boolean"},
+                        "issueName": {"type": "text"},
+                        "folderGuid": {"type": "text"},
+                        "lastScanId": {"type": "integer"},
+                        "engineType": {"type":"text"},
+                        "issueStatus": {"type": "text"},
+                        "friority": {"type": "text"},
+                        "analyzer": {"type": "text"},
+                        "primaryLocation": {"type": "text"},
+                        "reviewed": {"type": "text"},
+                        "id": {"type": "integer"},
+                        "suppressed": {"type": "boolean"},
+                        "hasAttachments": {"type": "boolean"},
+                        "engineCategory": {"type": "text"},
+                        "projectVersionName": {"type": "text"},
+                        "removedDate": {"type": "date"},
+                        "severity": {"type": "double"},
+                        "_href": {"type": "text"},
+                        "displayEngineType": {"type": "text"},
+                        "foundDate": {"type": "date"},
+                        "confidence": {"type": "double"},
+                        "impact": {"type": "double"},
+                        "primaryRuleGuid": {"type": "text"},
+                        "projectVersionId": {"type": "integer"},
+                        "scanStatus": {"type":"text"},
+                        "audited": {"type": "boolean"},
+                        "kingdom": {"type": "text"},
+                        "folderId": {"type": "integer"},
+                        "revision": {"type": "integer"},
+                        "likelihood": {"type": "double"},
+                        "removed": {"type": "boolean"},
+                        "issueInstanceId": {"type": "text"},
+                        "hasCorrelatedIssues": {"type": "boolean"},
+                        "primaryTag": {"type": "text"},
+                        "lineNumber": {"type": "integer"},
+                        "projectName": {"type": "text"},
+                        "fullFileName": {"type": "text"},
+                        "primaryTagValueAutoApplied": {"type": "boolean"}
+                    }
+                }
+            }
+        }
+        response = requests.put(_url, data=json.dumps(_mapping), headers=_Headers)
+
+        logging.info('Mapping sscprojissueshidden - {}'.format(response.text))
+
+    def postSSCProjIssuesHidden(self, _issues):
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+
+        self.postsscissueshidden = {
+            'status': 'OK',
+            'status_code': 200,
+            'response': 'OK'
+        }
+
+        
+        url = '{}/sscprojissueshidden/sscprojissueshidden/'.format(self._elasticUrl)
+        response = requests.post(url, data=_issues, headers=_Headers)
+        #logging.info('posting sscprojissues: {} - {}'.format(_issues, response.text))
+
+        return self.postsscissueshidden
 
     
 
@@ -1018,6 +1141,25 @@ class elasticUtil:
     def searchSSCProjectCountsforProjectId(self, projid):
 
         url = ('{}/sscprojcounts/_search'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "projectVersionId": projid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchSSCProjectCountsHiddenforProjectId(self, projid):
+
+        url = ('{}/sscprojcountshidden/_search'.format(self._elasticUrl))
 
         _post ={
                 "query": {
@@ -1157,7 +1299,8 @@ class elasticUtil:
 
     def searchSSCProjectIssuesforRemovedBadDate(self):
 
-        trueval = False
+        trueval = True
+        falseval = False
         iRecToReturn = 500
 
         url = ('{}/sscprojissues/_search?scroll=5m'.format(self._elasticUrl))
@@ -1171,10 +1314,20 @@ class elasticUtil:
                     "bool": {
                         "must": [
                         {
-                            "term": {                        
-                                "removed": trueval
+                            "term": {
+                                "removed": trueval,
                             }
-                       }
+                        },
+                        {
+                            "term": {
+                                "suppressed": falseval,
+                            }
+                        },
+                        {
+                            "term": {                        
+                                "hidden": falseval
+                            }
+                        },
                     ]
                 }
             }
@@ -1453,6 +1606,25 @@ class elasticUtil:
 
         return  json.loads(response.text)
 
+    def deleteSSCProjectCountsHiddenbyProjectId(self, projid):
+
+        url = ('{}/sscprojcountshidden/sscprojcountshidden/_delete_by_query'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "projectVersionId": projid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+       #print(response.text)
+
+        return  json.loads(response.text)
+
     def deleteSSCProjectAttrsbyProjectId(self, projid):
 
         url = ('{}/sscprojattrs/sscprojattrs/_delete_by_query'.format(self._elasticUrl))
@@ -1494,6 +1666,25 @@ class elasticUtil:
     def deleteSSCProjectIssuesbyProjectId(self, projid):
 
         url = ('{}/sscprojissues/sscprojissues/_delete_by_query'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "projectVersionId": projid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+       #print(response.text)
+
+        return  json.loads(response.text)
+
+    def deleteSSCProjectIssuesHiddenbyProjectId(self, projid):
+
+        url = ('{}/sscprojissueshidden/sscprojissueshidden/_delete_by_query'.format(self._elasticUrl))
 
         _post ={
                 "query": {
