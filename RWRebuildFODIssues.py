@@ -19,7 +19,8 @@ es = elasticUtil(_url)
 fod = fodUtils()
 fod.FODAuth(settings['client_id'], settings['client_secret'])
 
-holdreleaseId = 136944
+holdreleaseId = 141539
+
 
 delrelissues = es.deleteFODRelIssuesbyReleaseId(holdreleaseId)
 logging.info(delrelissues)

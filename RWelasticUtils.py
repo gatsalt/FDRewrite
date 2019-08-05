@@ -512,6 +512,9 @@ class elasticUtil:
 
         #logging.info(response.text)
 
+    '''
+    map sscprojects table - ssc project (release) information
+    '''
 
     def mapSSCProjects(self):
 
@@ -568,6 +571,9 @@ class elasticUtil:
 
         logging.info('Mapping sscprojects - {}'.format(response.text))
 
+    '''
+    post to sscprojects table - ssc project (release) information
+    '''
 
     def postSSCProjects(self, jproject):
 
@@ -588,6 +594,10 @@ class elasticUtil:
         #print(response.text)
 
         return self.postsscproj
+
+    '''
+    map sscprojcounts table - ssc project (release) summary count information - for comparison purposes
+    '''
     
 
     def mapSSCProjCounts(self):
@@ -619,6 +629,10 @@ class elasticUtil:
         response = requests.put(_url, data=json.dumps(_mapping), headers=_Headers)
 
         logging.info('Mapping sscprojcounts - {}'.format(response.text))
+
+    '''
+    post sscprojcounts table - ssc project (release) summary count information
+    '''
 
     
     def postSSCProjCounts(self, jprojcount):
@@ -686,6 +700,10 @@ class elasticUtil:
 
         return self.postsscprojcounthidden
 
+    '''
+    map sscprojattrs table - ssc project (release) attribute information
+    '''
+
 
     def mapSSCProjAttributes(self):
 
@@ -732,6 +750,10 @@ class elasticUtil:
 
         logging.info('Mapping sscprojattrs - {}'.format(response.text))
 
+    '''
+    post sscprojattrs table - ssc project (release) attribute information
+    '''
+
     def postSSCProjAttrs(self, projid, jprojattrs):
 
         _Headers = {'Accept': 'application/json',
@@ -756,6 +778,10 @@ class elasticUtil:
         #print(response.text)
 
         return self.postsscprojattrs
+
+    '''
+    map sscprojscans table - ssc project (release) scan information
+    '''
 
     def mapSSCProjScans(self):
 
@@ -836,6 +862,10 @@ class elasticUtil:
 
         logging.info('Mapping sscprojscans - {}'.format(response.text))
 
+    '''
+    post sscprojscans table - ssc project (release) scan information
+    '''
+
     def postSSCProjScans(self, projid, jprojscans):
 
         _Headers = {'Accept': 'application/json',
@@ -861,6 +891,9 @@ class elasticUtil:
 
         return self.postsscprojscans
 
+    '''
+    map sscprojissues table - ssc project (release) scan information
+    '''
 
     def mapSSCProjIssues(self):
 
@@ -921,6 +954,10 @@ class elasticUtil:
         response = requests.put(_url, data=json.dumps(_mapping), headers=_Headers)
 
         logging.info('Mapping sscprojissues - {}'.format(response.text))
+
+    '''
+    post sscprojissues table - ssc project (release) scan information
+    '''
 
     def postSSCProjIssues(self, _issues):
 
@@ -1119,6 +1156,10 @@ class elasticUtil:
 
         return  json.loads(response.text)
 
+    '''
+    search sscprojects table for given project id 
+    '''
+
     def searchSSCProjectsforProjectId(self, projid):
 
         url = ('{}/sscprojects/_search'.format(self._elasticUrl))
@@ -1137,6 +1178,10 @@ class elasticUtil:
         #print(response.text)
 
         return  json.loads(response.text)
+
+    '''
+    search sscprojcounts table for given project id 
+    '''
 
     def searchSSCProjectCountsforProjectId(self, projid):
 
@@ -1568,6 +1613,10 @@ class elasticUtil:
 
         return  json.loads(response.text)
 
+    '''
+    delete specific project id information from sscprojects elastic table
+    '''
+
     def deleteSSCProjectsbyProjectId(self, projid):
 
         url = ('{}/sscprojects/sscprojects/_delete_by_query'.format(self._elasticUrl))
@@ -1586,6 +1635,10 @@ class elasticUtil:
        #print(response.text)
 
         return  json.loads(response.text)
+
+    '''
+    delete specific project id information from sscprojcounts elastic table
+    '''
 
     def deleteSSCProjectCountsbyProjectId(self, projid):
 
@@ -1606,6 +1659,8 @@ class elasticUtil:
 
         return  json.loads(response.text)
 
+
+
     def deleteSSCProjectCountsHiddenbyProjectId(self, projid):
 
         url = ('{}/sscprojcountshidden/sscprojcountshidden/_delete_by_query'.format(self._elasticUrl))
@@ -1624,6 +1679,10 @@ class elasticUtil:
        #print(response.text)
 
         return  json.loads(response.text)
+
+    '''
+    delete specific project id information from sscprojattrs elastic table
+    '''
 
     def deleteSSCProjectAttrsbyProjectId(self, projid):
 
@@ -1644,6 +1703,10 @@ class elasticUtil:
 
         return  json.loads(response.text)
 
+    '''
+    delete specific project id information from sscprojscans elastic table
+    '''
+
     def deleteSSCProjectScansbyProjectId(self, projid):
 
         url = ('{}/sscprojscans/sscprojscans/_delete_by_query'.format(self._elasticUrl))
@@ -1662,6 +1725,10 @@ class elasticUtil:
        #print(response.text)
 
         return  json.loads(response.text)
+
+    '''
+    delete specific project id information from sscprojissues elastic table
+    '''
 
     def deleteSSCProjectIssuesbyProjectId(self, projid):
 

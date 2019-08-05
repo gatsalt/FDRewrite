@@ -9,6 +9,6 @@
   "CSVRpt2filePath": "c:\\Reports\\SSC0LOCRpt.csv",
   "CSVFODRptfilePath": "c:\\Reports\\FODVul.csv",
   "CSVSSCRptfilePath": "c:\\Reports\\SSCIss.csv",
-  "CSVSSCAggRptfilePath": "c:\\Reports\\SSCAgg.csv",
+  "CSVSSCAggRptfilePath": "c:\\splunkdata\\SSCAgg.csv",
   "CSVFODAggRptfilePath": "c:\\Reports\\FODAgg.csv"
 }

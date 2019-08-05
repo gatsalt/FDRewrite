@@ -8,7 +8,7 @@ import logging
 
 
 '''
-    SSC Utils
+    SSC Utils - SSC API calls needed to retrive information
 '''
 
 class sscUtils:
@@ -20,7 +20,9 @@ class sscUtils:
         self.allIssues = {'data': [], 'Critical': 0, 'High': 0, 'Medium': 0, 'Low':0, 'count': 0}
         
 
-     
+    '''
+    store authorization information - username and password for API calls
+    ''' 
 
     def sscAuth(self, user, password):
 
@@ -31,6 +33,10 @@ class sscUtils:
             'Content-Type':'application/json'
             }
 
+    '''
+    retrieve summary issue count information for given release - includes subcall to get summary count of removed and suppressed issues
+    ''' 
+
     def getProjectVersionIssueCounts(self, id):
 
         _issueCounts = {
@@ -39,7 +45,6 @@ class sscUtils:
             'hiddenCount': 0, 'suppressedCount': 0, 'removedCount': 0
         }
 
-        #_url = 'https://fortify.1dc.com/ssc/api/v1/projectVersions/{}/issueGroups?groupingtype=11111111-1111-1111-1111-111111111150&filterset=a243b195-0a59-3f8b-1403-d55b7a7d78e6&filter=FOLDER:b968f72f-cc12-03b5-976e-ad4c13920c21&qm=issues&showhidden=false&showremoved=false&showshortfileNames=true&showsuppressed=false'.format(id)
         _url = 'https://fortify.1dc.com/ssc/api/v1/projectVersions/{}/issueGroups?groupingtype=11111111-1111-1111-1111-111111111150&filterset=a243b195-0a59-3f8b-1403-d55b7a7d78e6&qm=issues&showhidden=false&showremoved=false&showshortfileNames=true&showsuppressed=false'.format(id)
 
         response = requests.get(_url, auth=HTTPBasicAuth(self.sscUser, self.sscPassword), headers=self.headers)
@@ -74,7 +79,6 @@ class sscUtils:
 
         try:
 
-            #_issueCounts['hiddenCount'] = _summaryHidden['data'][0]['hiddenCount']
             _issueCounts['suppressedCount'] = _summaryHidden['data'][0]['suppressedCount']
             _issueCounts['removedCount'] = _summaryHidden['data'][0]['removedCount']
 
@@ -119,6 +123,10 @@ class sscUtils:
 
         return LOCcounts
 
+    '''
+    retrieve scan information for given release 
+    ''' 
+
     def getProjectVersionScans(self, id):
 
         _url = 'https://fortify.1dc.com/ssc/api/v1/projectVersions/{}/artifacts?embed=scans&start=0&limit=1000'.format(id)
@@ -128,6 +136,10 @@ class sscUtils:
    
 
         return PVscans
+
+    '''
+    retrieve attribute information for given release 
+    ''' 
 
     def getProjectVersionAttributes(self, id):
 
@@ -217,7 +229,11 @@ class sscUtils:
 
         
         return _issues
-        
+
+    '''
+    retrieve and load issue information (open, removed or suppressed) for given release
+    because there can be a large number, retrieve and load in batches 
+    '''         
 
     def getAndLoadProjectVersionIssues(self, id, elasticUrl):
 
@@ -288,6 +304,8 @@ class sscUtils:
 
         
         return True
+
+
 
     def getAndLoadProjectVersionIssuesHidden(self, id, elasticUrl):
 
@@ -381,7 +399,9 @@ class sscUtils:
         
         return True
 
-    
+    '''
+    retrieve current release (ProjectVersion) information from SSC 
+    '''     
 
     def getProjectVersions(self):
 

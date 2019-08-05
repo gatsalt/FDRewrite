@@ -13,32 +13,23 @@ with open('settings.json') as json_data:
 
 configLogging(settings)
 
-logging.info('Create Elastic Tables for FOD and SSC')
+logging.info('Starting ExtractSSC process')
 
+ssc = sscUtils()
 _url = settings['elasticURL']
 es = elasticUtil(_url)
+sscES = SSCESUtils()
 
-#es.mapSSCProjCountsHidden()
+ssc.sscAuth('F86GW27', 'DEltaFD268!')
 
-#es.mapSSCProjIssuesHidden()
 
-#es.mapFODApplications()
+projid = 32769
 
-#es.mapFODCounts()
 
-#es.mapFODScans()
+delprojecti = es.deleteSSCProjectIssuesbyProjectId(projid)
+logging.info(delprojecti)
+logging.info(projid)
 
-#es.mapFODScanSummary()
-
-#es.mapFODRelIssues()
-
-'''es.mapSSCProjects()
-
-es.mapSSCProjCounts()
-
-es.mapSSCProjAttributes()
-
-es.mapSSCProjScans()
-
-es.mapSSCProjIssues()'''
+#post Project issues          
+projectIssues = ssc.getAndLoadProjectVersionIssues(projid, _url)
 

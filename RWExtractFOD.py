@@ -109,7 +109,7 @@ for fodAllrel in fod.allReleases["items"]:
 
         if datemismatch == True:
 
-            #logging.info ('one or more dates are off - need to reset')
+            logging.info ('one or more dates are off - need to reset')
             needsReset = True
 
         else:
@@ -138,30 +138,30 @@ for fodAllrel in fod.allReleases["items"]:
 
                     if ((holdfixed == comparefixed) and (holdsuppressed == comparesuppressed)):
 
-                        #logging.info('all counts match - no need to reset')
+                        logging.info('all counts match - no need to reset')
                         needsReset = False
 
                     else:
 
-                        #logging.info('fixed or suppressed is off - need to reset')
+                        logging.info('fixed or suppressed is off - need to reset')
                         needsReset = True
 
                 else:
 
-                    #logging.info('no fixed or suppressed counts found - need to reset')
+                    logging.info('no fixed or suppressed counts found - need to reset')
                     needsReset = True
 
             else:
 
-                #logging.info('something off in counts - need to reset')
+                logging.info('something off in counts - need to reset')
                 needsReset = True
 
     else:
 
-        #logging.info ('not in table - need to reseet - get next release')
+        logging.info ('not in table - need to reseet - get next release')
         needsReset = True
 
-    #logging.info('need to reset value {}'.format(needsReset))
+    logging.info('need to reset value {}'.format(needsReset))
 
     if needsReset == True:
 
