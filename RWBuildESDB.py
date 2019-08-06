@@ -24,6 +24,8 @@ es = elasticUtil(_url)
 
 #es.mapFODApplications()
 
+#es.mapFODReleases()
+
 #es.mapFODCounts()
 
 #es.mapFODScans()
