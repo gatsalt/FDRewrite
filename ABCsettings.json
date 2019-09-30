@@ -1,0 +1,14 @@
+{
+  "elasticURL": "http://localhost:9200",
+  "client_id": "aebe00ce-39a8-4065-b25a-312af0037b97",
+  "client_secret": "R5pplru;zbvXf8ISc'R06jv]lkyU3z",
+  "loggingFolder": ".\\logs\\",
+  "dataFolder": ".\\data\\",
+  "CSVfilePath": "c:\\splunkdata\\Test2AppRelExport.csv",
+  "CSVfile2Path": "c:\\splunkdata\\Test2AppRelExport2.csv",
+  "CSVRptfilePath": "c:\\Reports\\Test2ReqAuthRpt.csv",
+  "CSVTestRptfilePath": "c:\\Reports\\Test2AttributeCompareRpt.csv",
+  "CSVTestRpt2filePath": "c:\\Reports\\Test2AttributeCompareRpt2.csv",
+  "CSVRpt2filePath": "c:\\Reports\\Test2SSC0LOCRpt.csv",
+  "CSVSSCAggRptfilePath": "c:\\Reports\\Test2SSCAgg.csv"
+}
