@@ -1,3 +1,10 @@
+'''
+/* Copyright (C) Saltworks Security, LLC - All Rights Reserved
+* Unauthorized copying of this file, via any medium is strictly prohibited
+* Proprietary and confidential
+* Written by Saltworks Security, LLC  (www.saltworks.io) , 2019
+*/
+'''
 from typing import Dict, List, Any, Union
 
 import requests
@@ -106,8 +113,8 @@ class elasticUtil:
                 "fodapplications": {
                     "properties": {
                         "applicationId": {"type": "integer"},
-                        "applicationName": {"type": "text"},
-                        "applicationDescription": {"type": "text"},
+                        "applicationName": {"type": "keyword"},
+                        "applicationDescription": {"type": "keyword"},
                         "applicationCreatedDate": {"type": "date"},
                         "businessCriticalityTypeId": {"type": "integer"},
                         "businessCriticalityType": {"type": "text"},
@@ -115,25 +122,7 @@ class elasticUtil:
                         "applicationTypeId": {"type": "integer"},
                         "applicationType": {"type": "text"},
                         "hasMicroservices": {"type": "boolean"},
-                        "attributes": {"type": "nested",
-                            "properties": {
-                                "UAID": {"type": "text"},
-                                "OOS?": {"type": "text"},
-                                "EMD: Planning/Analysis": {"type": "text"},
-                                "EMD: Remediation": {"type": "text"},
-                                "EMD: Code Resubmission": {"type": "text"},
-                                "RAG Status": {"type": "text"},
-                                "APP STATUS": {"type": "text"},
-                                "Subscription": {"type": "text"},
-                                "Reason OOS": {"type": "text"},
-                                "FoD Integration": {"type": "text"},
-                                "Integration Date": {"type": "text"},
-                                "Build Environment": {"type": "text"},
-                                "Overall Application Status Comments": {"type": "text"},
-                                "Reason not Integrated": {"type": "text"},
-                                "OOS Language ": {"type": "text"}
-                                       }
-                                }
+                        
                     }
                 }
             }
@@ -216,7 +205,7 @@ class elasticUtil:
 
         response = requests.put(_url, data=json.dumps(_mapping), headers=_Headers)
 
-        logging.info('Mapping fodappcations - {}'.format(response.text))
+        logging.info('Mapping fodreleases - {}'.format(response.text))
 
     def postFODRels(self, jrel):
 
@@ -236,6 +225,82 @@ class elasticUtil:
         #print(response.text)
 
         return self.postfodreleases
+
+    def mapFODReleasesArchive(self):
+
+        self.delESIndex('fodreleasesarchive')
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+
+        _url = '{}/fodreleasesarchive'.format(self._elasticUrl)
+        _mapping = {
+            "mappings": {
+                "fodreleasesarchive": {
+                    "properties": {
+                        "releaseId": {"type": "integer"},
+                        "releaseName": {"type": "text"},
+                        "releaseDescription": {"type": "text"},
+                        "releaseCreatedDate": {"type": "date"},
+                        "microserviceName": {"type": "text"},
+                        "microserviceId": {"type": "integer"},
+                        "applicationId": {"type": "integer"},
+                        "applicationName": {"type": "text"},
+                        "currentAnalysisStatusTypeId": {"type": "integer"},
+                        "currentAnalysisStatusType": {"type": "text"},
+                        "rating": {"type": "integer"},
+                        "critical": {"type": "integer"},
+                        "high": {"type": "integer"},
+                        "medium": {"type": "integer"},
+                        "low": {"type": "integer"},
+                        "currentStaticScanId": {"type": "integer"},
+                        "currentDynamicScanId": {"type": "integer"},
+                        "currentMobileScanId": {"type": "integer"},
+                        "staticAnalysisStatusType": {"type": "text"},
+                        "dynamicAnalysisStatusType": {"type": "text"},
+                        "mobileAnalysisStatusType": {"type": "text"},
+                        "staticAnalysisStatusTypeId": {"type": "integer"},
+                        "dynamicAnalysisStatusTypeId": {"type": "integer"},
+                        "mobileAnalysisStatusTypeId": {"type": "integer"},
+                        "staticScanDate": {"type": "date"},
+                        "dynamicScanDate": {"type": "date"},
+                        "mobileScanDate": {"type": "date"},
+                        "issueCount": {"type": "integer"},
+                        "isPassed": {"type": "boolean"},
+                        "passFailReasonTypeId": {"type": "integer"},
+                        "passFailReasonType": {"type": "text"},
+                        "sdlcStatusTypeId": {"type": "integer"},
+                        "sdlcStatusType": {"type": "text"},
+                        "ownerId": {"type": "integer"}
+                               }
+                        }
+                    }
+                }
+
+        response = requests.put(_url, data=json.dumps(_mapping), headers=_Headers)
+
+        logging.info('Mapping fodreleasesarchive - {}'.format(response.text))
+
+    def postFODRelsArchive(self, jrel):
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+
+        self.postfodreleasesarch = {
+            'status': 'OK',
+            'status_code': 200,
+            'response': 'OK'
+        }
+        _url = '{}/fodreleasesarchive/fodreleasesarchive/'.format(self._elasticUrl)
+
+        response = requests.post(_url, data=jrel,  headers = _Headers )
+
+        #print(response.text)
+
+        return self.postfodreleasesarch
+
 
     def mapFODCounts(self):
 
@@ -645,6 +710,83 @@ class elasticUtil:
 
         return self.postsscproj
     
+    def mapSSCProjectsArchive(self):
+
+        self.delESIndex('sscprojectsarchive')
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+        
+        _url = '{}/sscprojectsarchive'.format(self._elasticUrl)
+        _mapping = {
+            "mappings": {
+                "sscprojectsarchive": {
+                    "properties": {
+                        "_href": {"type": "text"},
+                        "name": {"type": "text"},
+                        "project": {"type": "nested",
+                            "properties": {
+                                "id": {"type": "integer"},
+                                "name": {"type": "text"},
+                                "description": {"type": "text"},
+                                "creationDate": {"type": "date"},
+                                "createdBy": {"type": "text"},
+                                "issueTemplateId": {"type": "text"}
+                                }
+                            },
+                        "id": {"type": "integer"},
+                        "issueTemplateId": {"type":"text"},
+                        "currentState": {"type": "nested",
+                            "properties": {
+                                "id": {"type": "integer"},
+                                "committed": {"type": "boolean"},
+                                "attentionRequired": {"type": "boolean"},
+                                "analysisResultsExist": {"type": "boolean"},
+                                "auditEnabled": {"type": "boolean"},
+                                "lastFPRUploadDate": {"type": "date"},
+                                "extraMessage": {"type": "boolean"},
+                                "analysisUploadEnables": {"type": "boolean"},
+                                "batchBugSubmissionExists": {"type": "boolean"},
+                                "hasCustomIssues": {"type": "boolean"},
+                                "metricEvaluationDate": {"type": "date"},
+                                "deltaPeriod": {"type": "integer"},
+                                "issueCountDelta": {"type": "integer"},
+                                "percentAuditedDelta": {"type": "double"},
+                                "criticalPriorityIssueContDelta": {"type":"integer"},
+                                "percentCriticalPriorityIssueAuditedDelta": {"type": "double"}
+                                       }
+                                }
+                    }
+                }
+            }
+        }
+        response = requests.put(_url, data=json.dumps(_mapping), headers=_Headers)
+
+        logging.info('Mapping sscprojectsarchive - {}'.format(response.text))
+
+
+    def postSSCProjectsArchive(self, jproject):
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+
+        self.postsscprojarchive = {
+            'status': 'OK',
+            'status_code': 200,
+            'response': 'OK'
+        }
+
+        url = '{}/sscprojectsarchive/sscprojectsarchive/'.format(self._elasticUrl)
+        response = requests.post(url, data=jproject, headers=_Headers)
+        #logging.info('posting projects: {} - {}'.format(jproject, response.text))
+
+        #print(response.text)
+
+        return self.postsscprojarchive
+    
+
 
     def mapSSCProjCounts(self):
 
@@ -812,6 +954,53 @@ class elasticUtil:
         #print(response.text)
 
         return self.postsscprojattrs
+
+    def mapSSCProjAttributes2(self):
+
+        self.delESIndex('sscprojattr2')
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+        
+        _url = '{}/sscprojattr2'.format(self._elasticUrl)
+        _mapping = {
+            "mappings": {
+                "sscprojattr2": {
+                    "properties": {
+                        "projectVersionId": {"type": "integer"},
+                        "attributeId": {"type": "integer"},
+                        "attributeName": {"type": "text"},
+                        "attributeValue": {"type": "text"}    
+                            }
+                        }            
+                    }
+                }
+            
+        
+        response = requests.put(_url, data=json.dumps(_mapping), headers=_Headers)
+
+        logging.info('Mapping sscprojattr2 - {}'.format(response.text))
+
+    def postSSCProjAttr2(self, jprojattrs):
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+
+        self.postsscprojattr2 = {
+            'status': 'OK',
+            'status_code': 200,
+            'response': 'OK'
+        }
+
+        url = '{}/sscprojattr2/sscprojattr2/'.format(self._elasticUrl)
+        response = requests.post(url, data=jprojattrs, headers=_Headers)
+        #logging.info('posting sscprojattr2: {} - {}'.format(jprojattrs, response.text))
+
+        #print(response.text)
+
+        return self.postsscprojattr2
 
     def mapSSCProjScans(self):
 
@@ -1175,6 +1364,205 @@ class elasticUtil:
 
         return  json.loads(response.text)
 
+    def searchSSCProjectOpenIssuesforProjectId(self, projid):
+
+        falseval = False
+        iRecToReturn = 500
+
+        url = ('{}/sscprojissues/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "projectVersionId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "projectVersionId": projid,
+                            }
+                        },
+                        {
+                            "term": {                        
+                                "hidden": falseval,
+                            }
+                       },
+                       {
+                            "term": {
+                                "suppressed": falseval,
+                            }
+                        },
+                        {
+                            "term": {                        
+                                "removed": falseval
+                            }
+                       }
+                    ]
+                }
+            }
+        }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchSSCProjectSuppressedIssuesforProjectId(self, projid):
+
+        falseval = False
+        trueval = True
+        iRecToReturn = 500
+
+        url = ('{}/sscprojissues/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "projectVersionId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "projectVersionId": projid,
+                            }
+                        },
+                        {
+                            "term": {
+                                "suppressed": trueval
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchSSCProjectRemovedIssuesforProjectId(self, projid):
+
+        falseval = False
+        trueval = True
+        iRecToReturn = 500
+
+        url = ('{}/sscprojissues/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "projectVersionId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "projectVersionId": projid,
+                            }
+                        },
+                        {
+                            "term": {
+                                "removed": trueval
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchSSCProjectSuppressedHiddenIssuesforProjectId(self, projid):
+
+        falseval = False
+        trueval = True
+        iRecToReturn = 500
+
+        url = ('{}/sscprojissueshidden/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "projectVersionId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "projectVersionId": projid,
+                            }
+                        },
+                        {
+                            "term": {
+                                "suppressed": trueval
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchSSCProjectRemovedHiddenIssuesforProjectId(self, projid):
+
+        falseval = False
+        trueval = True
+        iRecToReturn = 500
+
+        url = ('{}/sscprojissueshidden/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "projectVersionId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "projectVersionId": projid,
+                            }
+                        },
+                        {
+                            "term": {
+                                "removed": trueval
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
     def searchSSCProjectsforProjectId(self, projid):
 
         url = ('{}/sscprojects/_search'.format(self._elasticUrl))
@@ -1231,6 +1619,92 @@ class elasticUtil:
         #print(response.text)
 
         return  json.loads(response.text)
+
+    def searchSSCProjectAttr2forProjectId(self, projid):
+
+
+        iRecToReturn = 50
+        url = ('{}/sscprojattr2/_search'.format(self._elasticUrl))
+
+        _post ={"size": iRecToReturn,
+                "sort": ["attributeId"],
+                "query": {
+                    "match_phrase": {
+                        "projectVersionId": projid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+
+        #if projid == 22084594:
+            #print(response.text)
+
+        return  json.loads(response.text)
+
+
+    def searchSSCProjectAttr2forProjectIdandFortifyIntegration(self, projid):
+
+
+        iRecToReturn = 50
+        url = ('{}/sscprojattr2/_search'.format(self._elasticUrl))
+        fortifyIntegrationAttr = 301220
+
+        _post ={"size": iRecToReturn,
+                "sort": ["attributeId"],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "projectVersionId": projid,
+                            }
+                        },
+                        {
+                            "term": {
+                                "attributeId": fortifyIntegrationAttr
+                            }
+                        }
+                        ]
+                    }
+                }
+            }
+
+                
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+
+        #if projid == 22084594:
+            #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchSSCProjectScansforProjectId(self, projid):
+
+        iRecToReturn = 2000
+
+        url = ('{}/sscprojscans/_search'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "query": {
+                    "match_phrase": {
+                        "projectVersionId": projid
+                        }
+                    }
+                }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
 
 
     def searchSSCProjectIssuesforProjectId(self, projid):
@@ -1382,6 +1856,49 @@ class elasticUtil:
                         {
                             "term": {                        
                                 "hidden": falseval
+                            }
+                        },
+                    ]
+                }
+            }
+        }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchSSCProjectIssuesforHidden(self):
+
+        trueval = True
+        falseval = False
+        iRecToReturn = 500
+
+        url = ('{}/sscprojissues/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "projectVersionId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "removed": falseval,
+                            }
+                        },
+                        {
+                            "term": {
+                                "suppressed": falseval,
+                            }
+                        },
+                        {
+                            "term": {                        
+                                "hidden": trueval
                             }
                         },
                     ]
@@ -1777,6 +2294,25 @@ class elasticUtil:
 
         return  json.loads(response.text)
 
+    def searchFODApplicationsforApplicationId(self, applid):
+
+        url = ('{}/fodapplications/_search'.format(self._elasticUrl))
+
+        _post ={
+                "query": {
+                    "match_phrase": {
+                        "applicationId": applid
+                    }
+                }
+            }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
     
 
     def deleteFODReleasesbyReleaseId(self, releaseid):
@@ -1894,6 +2430,156 @@ class elasticUtil:
 
         return  json.loads(response.text)
 
+    def searchFODScansforReleaseId(self, releaseid):
+
+        iRecToReturn = 2000
+
+        url = ('{}/fodscans/_search'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "query": {
+                    "match_phrase": {
+                        "releaseId": releaseid
+                        }
+                    }
+                }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchFODScanSummaryforScanId(self, scanid):
+
+        iRecToReturn = 100
+
+        url = ('{}/fodscansummary/_search'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "query": {
+                    "match_phrase": {
+                        "scanId": scanid
+                        }
+                    }
+                }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchFODOpenRelIssuesforReleaseId(self, releaseid):
+
+        falseval = False
+        iRecToReturn = 2000
+
+        url = ('{}/fodrelissues/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "releaseId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "releaseId": releaseid,
+                            }
+                        },
+                        {
+                            "term": {
+                                "isSuppressed": falseval
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchFODSuppressedIssuesforReleaseId(self, releaseid):
+
+        trueval = True
+        iRecToReturn = 500
+
+        url = ('{}/fodrelissues/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "releaseId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "releaseId": releaseid,
+                            }
+                        },
+                        {
+                            "term": {
+                                "isSuppressed": trueval
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchFODRemovedIssuesforReleaseId(self, releaseid):
+
+        falseval = False
+        iRecToReturn = 2000
+
+        url = ('{}/fodrelissues/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "releaseId" 
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "releaseId": releaseid,
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
     def searchFODCountsforReleaseId(self, releaseid):
 
         url = ('{}/fodcounts/_search'.format(self._elasticUrl))
@@ -1912,6 +2598,8 @@ class elasticUtil:
         #print(response.text)
 
         return  json.loads(response.text)
+
+
 
     def mapReportInfo(self):
 
@@ -1961,6 +2649,115 @@ class elasticUtil:
         
         return self.postapprelinfodata
 
+    def mapReportData(self):
+
+        self.delESIndex('apprelinforeport')
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+
+        _url = '{}/apprelinforeport'.format(self._elasticUrl)
+        _mapping = {
+            "mappings":{
+                "apprelinforeport":{
+                    "properties":{
+                        "_ApplicationID": {"type": "integer"},
+                        "_ApplicationName": {"type": "text"},
+                        "_ApplicationCreatedDate": {"type": "date"},
+                        "_ApplicationDescription": {"type": "text"},
+                        "_Release": {"type": "text"},
+                        "_ReleaseID": {"type": "integer"},
+                        "_ReleaseCreatedDate": {"type": "date"},
+                        "_ReleaseDescription": {"type": "text"},
+                        "_ScanCount": {"type": "integer"},
+                        "_StarRating": {"type": "text"},
+                        "_staticScanDate": {"type": "text"},
+                        "_dynamicScanDate": {"type": "text"},
+                        "_businessCriticalityType": {"type": "text"},
+                        "_ApplicationType": {"type": "text"},
+                        "_UAID": {"type": "text"},
+                        "_fodIntegration": {"type": "text"},
+                        "_buildEnvironment": {"type": "text"},
+                        "_DataSource": {"type": "text"},
+                        "_IssueCountCritical": {"type": "integer"},
+                        "_IssueCountHigh": {"type": "integer"},
+                        "_IssueCountMedium": {"type": "integer"},
+                        "_IssueCountLow": {"type": "integer"},
+                        "_IssueCountCriticalStatic": {"type": "integer"},
+                        "_IssueCountHighStatic": {"type": "integer"},
+                        "_IssueCountLowStatic": {"type": "integer"},
+                        "_IssueCountCriticalDyn": {"type": "integer"},
+                        "_IssueCountHighDyn": {"type": "integer"},
+                        "_IssueCountMediumDyn": {"type": "integer"},
+                        "_IssueCountLowDyn": {"type": "integer"},
+                        "_FixedIssue": {"type": "integer"},
+                        "_SuppressedIssues": {"type": "integer"},
+                        "_StaticScanStatus": {"type": "text"},
+                        "_totalIssues": {"type": "integer"},
+                        "_Total Static Scans": {"type": "integer"},
+                        "_DynScanCount": {"type": "integer"},
+                        "OOS": {"type": "text"},
+                        "EMDPlanningAnalysis": {"type": "text"},
+                        "EMDRemediation": {"type": "text"},
+                        "EMDCodeResubmission": {"type": "text"},
+                        "RAGStatus": {"type": "text"},
+                        "APPSTATUS": {"type": "text"},
+                        "Subscription": {"type": "text"},
+                        "ReasonOOS": {"type": "text"},
+                        "FoDIntegration": {"type": "text"},
+                        "IntegrationDate": {"type": "text"},
+                        "OverallApplicationStatusComments": {"type": "text"},
+                        "BuildEnvironment": {"type": "text"},
+                        "Integration Date": {"type": "text"},
+                        "'DataSource": {"type": "text"}, 
+                        "LOC": {"type": "integer"},
+                        "ReasonNotIntegrated": {"type": "text"},
+                        "DynamicScanStatus": {"type": "text"},
+                        "OOS Language": {"type": "text"},
+                        "OOS_Dynamic": {"type": "text"},
+                        "SDLCStatusType": {"type": "text"},
+                        "WebInspectIntegrationDate": {"type": "text"},
+                        "ScanCount_OpenSource": {"type": "integer"},
+                        "_IssueCountCriticalOS": {"type": "integer"},
+                        "_IssueCountHighOS": {"type": "integer"},
+                        "_IssueCountMediumOS": {"type": "integer"},
+                        "_IssueCountLowOS": {"type": "integer"},
+                        "_openSourceScanDate": {"type": "text"},
+                        "ApplicationComments": {"type": "text"},
+                        "dastBuildInt": {"type": "text"},
+                        "dastAuthenticated": {"type":"boolean"},
+                        "Company":{"type":"text"}
+
+                    }
+                }
+            }
+        }
+
+        response = requests.put(_url, data=json.dumps(_mapping), headers=_Headers)
+
+        logging.info('Mapping apprelinforeport - {}'.format(response.text))
+
+    def postReportData(self, reportdata):
+
+        _Headers = {'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    }
+
+        self.postapprelinforeport = {
+            'status': 'OK',
+            'status_code': 200,
+            'response': 'OK'
+        }
+
+        
+        url = '{}/apprelinforeport/apprelinforeport/'.format(self._elasticUrl)
+        
+        response = requests.post(url, data=reportdata, headers=_Headers)
+
+        logging.info('Posting apprelinfodata - {}'.format(response.text))
+        
+        return self.postapprelinforeport
 
     def searchAppRelInfoDataReleaseId(self, releaseid):
 
@@ -1973,6 +2770,38 @@ class elasticUtil:
                     }
                 }
             }
+
+
+        response = requests.post(url, data=json.dumps(_post), headers=self._Headers)
+
+        #print(response.text)
+
+        return  json.loads(response.text)
+
+    def searchSSCDastJiraInfoforProjectVersion(self, projectversion):
+
+        falseval = False
+        iRecToReturn = 500
+
+        url = ('{}/sscdastjirainfo/_search?scroll=5m'.format(self._elasticUrl))
+
+        _post ={
+                "size": iRecToReturn,
+                "sort": [
+                        "projectversion"
+                        ],
+                "query": {
+                    "bool": {
+                        "must": [
+                        {
+                            "term": {
+                                "projectversion": projectversion,
+                            }
+                        }
+                    ]
+                }
+            }
+        }
 
 
         response = requests.post(url, data=json.dumps(_post), headers=self._Headers)

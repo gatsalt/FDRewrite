@@ -1,11 +1,9 @@
 '''
- 
-Copyright (c) Saltworks Security, LLC (2018). All rights reserved.  
-
-FileName:
-
-Description:
-
+/* Copyright (C) Saltworks Security, LLC - All Rights Reserved
+* Unauthorized copying of this file, via any medium is strictly prohibited
+* Proprietary and confidential
+* Written by Saltworks Security, LLC  (www.saltworks.io) , 2019
+*/
 '''
 import requests
 import json
@@ -25,8 +23,11 @@ class SSCESUtils:
         self._allSSCProjects = []
         self._allSSCProjectCounts = []
         self._allSSCProjectAttrs = []
+        self._allSSCProjectAttr2 = []
+        self._allSSCProjectScans = []
         self._allSSCProjectIssues = []
         self._allTestProjects = []
+        self._allARIRRecords = []
         
 
         self._Headers = {'Accept': 'application/json',
@@ -48,7 +49,12 @@ class SSCESUtils:
         indices = json.loads(response.text)
 
         sscProjectsExists = False
-        sscProjectCountsExists = False
+        sscProjCountsExists = False
+        sscProjAttrsExists = False
+        sscProjAttr2Exists = False
+        sscProjScansExists = False
+        sscProjIssuesExists = False
+        sscProjIssuesHiddenExists = False
         sscAllExists = True
         
 
@@ -56,8 +62,18 @@ class SSCESUtils:
 
             if _idx['index'] == 'sscprojects':
                 sscProjectsExists = True
-            elif _idx['index'] == 'sscprojectcounts':
-                sscProjectCountsExists = True
+            elif _idx['index'] == 'sscprojcounts':
+                sscProjCountsExists = True
+            elif _idx['index'] == 'sscprojattrs':
+                sscProjAttrsExists = True
+            elif _idx['index'] == 'sscprojattr2':
+                sscProjAttr2Exists = True
+            elif _idx['index'] == 'sscprojscans':
+                sscProjScansExists = True
+            elif _idx['index'] == 'sscprojissues':
+                sscProjIssuesExists = True
+            elif _idx['index'] == 'sscprojissueshidden':
+                sscProjIssuesHiddenExists = True
                 
             
 
@@ -65,10 +81,30 @@ class SSCESUtils:
             logging.info('sscProjects does not exists')
             sscAllExists = False
 
-        if not sscProjectCountsExists:
-           logging.info('sscProjectCounts does not exists')
-           sscAllExists = False   
+        if not sscProjCountsExists:
+           logging.info('sscProjCounts does not exists')
+           sscAllExists = False
+
+        if not sscProjAttrsExists:
+            logging.info('sscProjAttrs does not exists')
+            sscAllExists = False
+
+        if not sscProjAttr2Exists:
+            logging.info('sscProjAttr2 does not exists')
+            sscAllExists = False
+
+        if not sscProjScansExists:
+           logging.info('sscProjScans does not exists')
+           sscAllExists = False    
             
+        if not sscProjIssuesExists:
+            logging.info('sscProjIssues does not exists')
+            sscAllExists = False
+
+        if not sscProjIssuesHiddenExists:
+           logging.info('sscProjIssuesHidden does not exists')
+           sscAllExists = False    
+
         return sscAllExists
 
     def getAllESSSCProjects(self):
@@ -77,7 +113,16 @@ class SSCESUtils:
         logging.info(_url)
 
         _searchPost = {
-            "size": 1000,
+            "size": 5000,
+            "sort": [
+                        {
+                        "id" : {
+                            "nested" : {
+                                "path" : "project"
+                                        }
+                                }
+                        }                        
+                        ],
         }
 
         response = requests.get(_url, data=json.dumps(_searchPost), headers=self._Headers)
@@ -92,7 +137,7 @@ class SSCESUtils:
         while len(oESResponse['hits']['hits']) > 0:
             for oSscProj in oESResponse['hits']['hits']:
                 iCount = iCount + 1
-                logging.info(iCount)
+                #logging.info(iCount)
                 self._allSSCProjects.append(oSscProj['_source'])
 
             #get the next batch
@@ -176,6 +221,76 @@ class SSCESUtils:
 
             oESResponse = json.loads(response.text)
 
+    def getAllESSSCProjAttr2(self):
+
+        _url = '{}/sscprojattr2/sscprojattr2/_search?scroll=1m'.format(self._elasticUrl)
+        logging.info(_url)
+
+        _searchPost = {
+            "size": 1000,
+        }
+
+        response = requests.get(_url, data=json.dumps(_searchPost), headers=self._Headers)
+
+        oESResponse = json.loads(response.text)
+
+        iTotalSSCProjAttr2Count = oESResponse['hits']['total']
+        logging.info("Total SSC Project Attribute2 in ES: {}".format(iTotalSSCProjAttr2Count))
+
+        iCount3a = 0
+        #while iCount < iTotalCount:
+        while len(oESResponse['hits']['hits']) > 0:
+            for oSscProjAttr2 in oESResponse['hits']['hits']:
+                iCount3a = iCount3a + 1
+                #logging.info(iCount3)
+                self._allSSCProjectAttr2.append(oSscProjAttr2['_source'])
+
+            #get the next batch
+            _url = '{}/_search/scroll'.format(self._elasticUrl)
+            _searchPost = {
+                "scroll": "1m",
+                "scroll_id": oESResponse['_scroll_id'],
+            }
+
+            response = requests.get(_url, data=json.dumps(_searchPost), headers=self._Headers)
+
+            oESResponse = json.loads(response.text)
+
+    def getAllESSSCProjScans(self):
+
+        _url = '{}/sscprojscans/sscprojscans/_search?scroll=1m'.format(self._elasticUrl)
+        logging.info(_url)
+
+        _searchPost = {
+            "size": 1000,
+        }
+
+        response = requests.get(_url, data=json.dumps(_searchPost), headers=self._Headers)
+
+        oESResponse = json.loads(response.text)
+
+        iTotalSSCProjScansCount = oESResponse['hits']['total']
+        logging.info("Total SSC Project Scans in ES: {}".format(iTotalSSCProjScansCount))
+
+        iCountsc = 0
+        #while iCount < iTotalCount:
+        while len(oESResponse['hits']['hits']) > 0:
+            for oSscProjScans in oESResponse['hits']['hits']:
+                iCountsc = iCountsc + 1
+                #logging.info(iCountsc)
+                self._allSSCProjectScans.append(oSscProjScans['_source'])
+
+            #get the next batch
+            _url = '{}/_search/scroll'.format(self._elasticUrl)
+            _searchPost = {
+                "scroll": "1m",
+                "scroll_id": oESResponse['_scroll_id'],
+            }
+
+            response = requests.get(_url, data=json.dumps(_searchPost), headers=self._Headers)
+
+            oESResponse = json.loads(response.text)
+
     def getAllESSSCProjIssues(self):
 
         _url = '{}/sscprojissues/sscprojissues/_search?scroll=5m'.format(self._elasticUrl)
@@ -246,4 +361,46 @@ class SSCESUtils:
 
             oESResponse = json.loads(response.text)
 
+    def getAllAppRelInfoReport(self):
+
+        _url = '{}/apprelinforeport/apprelinforeport/_search?scroll=1m'.format(self._elasticUrl)
+        logging.info(_url)
+
+        _searchPost = {
+            "size": 5000,
+            "sort": [
+                        "_ApplicationID",
+                        "_ReleaseID" 
+                        ],
+            }
+
+        #logging.info(_searchPost)
+        response = requests.get(_url, data=json.dumps(_searchPost), headers=self._Headers)
+
+        #logging.info(response)
+        oESResponse = json.loads(response.text)
+
+        #logging.info(oESResponse)
+
+        iTotalARIRCount = oESResponse['hits']['total']
+        logging.info("Total ARIR records in ES: {}".format(iTotalARIRCount))
+
+        iCount = 0
+        #while iCount < iTotalCount:
+        while len(oESResponse['hits']['hits']) > 0:
+            for oARIRrec in oESResponse['hits']['hits']:
+                iCount = iCount + 1
+                #logging.info(iCount)
+                self._allARIRRecords.append(oARIRrec['_source'])
+
+            #get the next batch
+            _url = '{}/_search/scroll'.format(self._elasticUrl)
+            _searchPost = {
+                "scroll": "1m",
+                "scroll_id": oESResponse['_scroll_id'],
+            }
+
+            response = requests.get(_url, data=json.dumps(_searchPost), headers=self._Headers)
+
+            oESResponse = json.loads(response.text)
     
